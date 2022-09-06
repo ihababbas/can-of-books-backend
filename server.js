@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3001;
-mongoose.connect('mongodb://localhost:27017/Books', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://ihababbas:ihab2312@ac-kxl5ukb-shard-00-00.pwuqss6.mongodb.net:27017,ac-kxl5ukb-shard-00-01.pwuqss6.mongodb.net:27017,ac-kxl5ukb-shard-00-02.pwuqss6.mongodb.net:27017/?ssl=true&replicaSet=atlas-g6rktj-shard-0&authSource=admin&retryWrites=true&w=majority/Books', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -47,7 +47,7 @@ await thirdBook.save();
 app.get('/books',BooksHandler)
 app.post('/books', postBooks)
 app.delete('/book/:id', deleteBooks);
-
+app.put('/books/:id', updateBooks);
 
 function BooksHandler(req,res) {
   Bookmodel.find({},(err,result)=>{
@@ -80,6 +80,15 @@ async function deleteBooks(req, res, next) {
     await Bookmodel.findByIdAndDelete(req.params.id);
     res.status(200).send('Book Deleted');
   } catch (err) {
+    next(err);
+  }
+};
+async function updateBooks(req, res, next) {
+  try {   
+    let id = req.params.id;
+    await Bookmodel.updateOne({_id: id},req.body);
+    res.status(200).send('Book Updated');
+  } catch (err) { 
     next(err);
   }
 };
