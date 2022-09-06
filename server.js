@@ -48,6 +48,7 @@ await thirdBook.save();
 
 
 app.get('/books',BooksHandler)
+app.post('/books', postBooks)
 
 
 function BooksHandler(req,res) {
@@ -64,7 +65,15 @@ function BooksHandler(req,res) {
   })
 }
 
-
+async function postBooks(req, res, next) {
+  console.log(req.params.id);
+  try {
+    let createdBooks = await Bookmodel.create(req.body)
+    res.status(200).send('Book Created');
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 
