@@ -6,7 +6,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 app.use(cors());
-
+app.use(express.json());
 const PORT = process.env.PORT || 3001;
 mongoose.connect('mongodb://localhost:27017/Books', {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -20,9 +20,6 @@ const Bookmodel = require('./book');
 
 
 async function seedData(){
-
-
-
 let firstBook = new Bookmodel({
   title: 'The Martian',
   description: 'Get you some potatoes',
@@ -49,6 +46,7 @@ await thirdBook.save();
 
 app.get('/books',BooksHandler)
 app.post('/books', postBooks)
+app.delete('/book/:id', deleteBooks);
 
 
 function BooksHandler(req,res) {
@@ -56,7 +54,7 @@ function BooksHandler(req,res) {
       if(err)
       {
           console.log(err);
-      }
+      } 
       else
       {
           console.log(result);
@@ -68,6 +66,8 @@ function BooksHandler(req,res) {
 async function postBooks(req, res, next) {
   console.log(req.params.id);
   try {
+    console.log(req.body);
+    console.log("post");
     let createdBooks = await Bookmodel.create(req.body)
     res.status(200).send('Book Created');
   } catch (err) {
@@ -75,6 +75,14 @@ async function postBooks(req, res, next) {
   }
 };
 
+async function deleteBooks(req, res, next) {
+  try {
+    await Bookmodel.findByIdAndDelete(req.params.id);
+    res.status(200).send('Book Deleted');
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 app.get('/test', (request, response) => {
