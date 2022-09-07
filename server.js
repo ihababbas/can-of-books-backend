@@ -23,17 +23,20 @@ async function seedData(){
 let firstBook = new Bookmodel({
   title: 'The Martian',
   description: 'Get you some potatoes',
-  status: 'unread'
+  status: 'unread',
+  name: "Admin",
 })
 let seceondbook = new Bookmodel({
   title: '12 Rules for Life',
   description: 't provides life advice through essays in abstract ethical principles, psychology, mythology, religion, and personal anecdotes.',
-  status: 'unread'
+  status: 'unread',
+  name: "Admin",
 })
 let thirdBook  = new Bookmodel({
   title: 'The Official SAT Study Guide,',
   description: 'one of the most useful test preparation tools available to the public for a very, very low cost.',
-  status: 'read'
+  status: 'read',
+  name: "Admin",
 })
 await firstBook.save();
 await seceondbook.save();
@@ -50,7 +53,8 @@ app.delete('/book/:id', deleteBooks);
 app.put('/books/:id', updateBooks);
 
 function BooksHandler(req,res) {
-  Bookmodel.find({},(err,result)=>{
+  const name = req.query.name
+  Bookmodel.find({name:name},(err,result)=>{
       if(err)
       {
           console.log(err);
@@ -77,6 +81,7 @@ async function postBooks(req, res, next) {
 
 async function deleteBooks(req, res, next) {
   try {
+    
     await Bookmodel.findByIdAndDelete(req.params.id);
     res.status(200).send('Book Deleted');
   } catch (err) {
